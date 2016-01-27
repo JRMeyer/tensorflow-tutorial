@@ -1,79 +1,103 @@
+from __future__ import division
 import numpy as np
 import tensorflow as tf
 import tarfile
 import os
-import math
 
-#import data
-def untar(tarPath):
-    tarObject = tarfile.open(tarPath)
-    tarObject.extractall()
-    tarObject.close()
-    print("Extracted tar to current directory")
 
-def importData(filePath, delimiter):
+def csv_to_numpy_array(filePath, delimiter):
     return np.genfromtxt(filePath, delimiter=delimiter, dtype=None)
 
-#untar data file
-if "data" not in os.listdir(os.getcwd()):
-    untar("data.tar.gz")
+def inport_data():
+    if "data" not in os.listdir(os.getcwd()):
+        # Untar directory of data if we haven't already
+        tarObject = tarfile.open("data.tar.gz")
+        tarObject.extractall()
+        tarObject.close()
+        print("Extracted tar to current directory")
+    else:
+        # we've already extracted the files
+        pass
 
-#imports data with following dimensions
-print("loading training data")
-trainX = importData("data/trainX.csv", delimiter="\t")
-trainY = importData("data/trainY.csv", delimiter="\t")
-print("loading test data")
-testX = importData("data/testX.csv", delimiter="\t")
-textY = importData("data/testY.csv", delimiter="\t")
+    print("loading training data")
+    trainX = csv_to_numpy_array("data/trainX.csv", delimiter="\t")
+    trainY = csv_to_numpy_array("data/trainY.csv", delimiter="\t")
+    print("loading test data")
+    testX = csv_to_numpy_array("data/testX.csv", delimiter="\t")
+    textY = csv_to_numpy_array("data/testY.csv", delimiter="\t")
+    return trainX,trainY,testX,testY
 
-#set global parameters
-#number of times we iterate through training data
-epochs = 5
-#batchSize of n
+
+
+#########################
+### GLOBAL PARAMETERS ###
+#########################
+
+# number of times we iterate through training data
+numEpochs = 5
+# here we set the batch size to be the total number of emails in our training
+# set... if you have a ton of data you can adjust this so you don't load
+# everyting in at once
 batchSize = trainX.shape[0]
-#used by gradientOptimizer
+# a smarter learning rate for gradientOptimizer
 learningRate = tf.train.exponential_decay(learning_rate=0.01,
                                           global_step= 1,
                                           decay_steps=trainX.shape[0],
                                           decay_rate= 0.95,
                                           staircase=True)
 
-#determining required dimensions
+# Get our dimensions for our different variables and placeholders:
+# numFeatures = the number of words extracted from each email
+# numLabels = number of classes we are predicting (here just 2: ham or spam)
 numFeatures = trainX.shape[1]
 numLabels = trainY.shape[1]
 
-#set tensorflow placeholders
-    #PUT EXPLANATION HERE
-# Define our tensor to hold email data. None indicates
-# we can hold any number of emails
-x = tf.placeholder(tf.float32, [None, numFeatures])
-# This will be our correct answers/output
+
+
+####################
+### PLACEHOLDERS ###
+####################
+
+# X = X-matrix / feature-matrix / data-matrix... It's a tensor to hold our email
+# data. 'None' here means that we can hold any number of emails
+X = tf.placeholder(tf.float32, [None, numFeatures])
+# yGold = Y-matrix / label-matrix / labels... This will be our correct answers
+# matrix. Every row has either [1,0] for SPAM or [0,1] for HAM. 'None' here 
+# means that we can hold any number of emails
 yGold = tf.placeholder(tf.float32, [None, numLabels])
 
 
-# Create the Variables for the weights and biases
-weights = tf.Variable(tf.random_normal(
-                                        [numFeatures, numLabels],
-                                        mean=0,
-                                        stddev=math.sqrt(float(6) / float(numFeatures + numLabels + 1))),
-                                        name="weights")
 
-biases = tf.Variable(tf.random_normal(
-                                        [1, numLabels],
-                                        mean=0,
-                                        stddev=math.sqrt(float(6) / float(numFeatures + numLabels + 1))),
-                                        name="biases")
+#################
+### VARIABLES ###
+#################
 
-# This is our prediction output
-#TODO here
-y = tf.nn.softmax(tf.matmul(x, W) + b)
+weights = tf.Variable(tf.random_normal([numFeatures,numLabels],
+                                       mean=0,
+                                       stddev=(np.sqrt(6/numFeatures+
+                                                         numLabels+1),
+                                       name="weights")
 
-# Calculate cross entropy by taking the negative sum of our correct values
-# multiplied by the log of our predictions
-cross_entropy = -tf.reduce_sum(y_*tf.log(y))
-# This is training the NN with backpropagation
-train_step = tf.train.GradientDescentOptimizer(0.01).minimize(cross_entropy)
-# Initializes all the variables we made above
-init = tf.initialize_all_variables()
+bias = tf.Variable(tf.random_normal([1,numLabels],
+                                    mean=0,
+                                    stddev=np.sqrt(6/numFeatures+numLabels+1),
+                                    name="bias")
+
+
+
+########################
+### OPS / OPERATIONS ###
+########################
+
+apply_weights_OP = tf.matmul(X, weights, name="apply_weights")
+add_bias_OP = tf.add(apply_weights_OP, bias, name="add_bias") 
+activation_OP = tf.nn.sigmoid(add_bias_OP, name="activation")
+# Mean squared error
+cost_OP = tf.nn.l2_loss(activation_OP-yGold, name="squared_error_cost")
+
+training_OP = tf.train.GradientDescentOptimizer(0.01).minimize(cost_OP)
+# Initializes everything we've defined made above, but doesn't run anything
+# until sess.run()
+init_OP = tf.initialize_all_variables()
 
 
