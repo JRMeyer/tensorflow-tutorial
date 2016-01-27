@@ -8,7 +8,7 @@ import os
 def csv_to_numpy_array(filePath, delimiter):
     return np.genfromtxt(filePath, delimiter=delimiter, dtype=None)
 
-def inport_data():
+def import_data():
     if "data" not in os.listdir(os.getcwd()):
         # Untar directory of data if we haven't already
         tarObject = tarfile.open("data.tar.gz")
@@ -24,9 +24,16 @@ def inport_data():
     trainY = csv_to_numpy_array("data/trainY.csv", delimiter="\t")
     print("loading test data")
     testX = csv_to_numpy_array("data/testX.csv", delimiter="\t")
-    textY = csv_to_numpy_array("data/testY.csv", delimiter="\t")
+    testY = csv_to_numpy_array("data/testY.csv", delimiter="\t")
     return trainX,trainY,testX,testY
 
+
+
+###################
+### IMPORT DATA ###
+###################
+
+trainX,trainY,testX,testY = import_data()
 
 
 #########################
@@ -34,13 +41,13 @@ def inport_data():
 #########################
 
 # number of times we iterate through training data
-numEpochs = 5
+numEpochs = 500
 # here we set the batch size to be the total number of emails in our training
 # set... if you have a ton of data you can adjust this so you don't load
 # everyting in at once
 batchSize = trainX.shape[0]
 # a smarter learning rate for gradientOptimizer
-learningRate = tf.train.exponential_decay(learning_rate=0.01,
+learningRate = tf.train.exponential_decay(learning_rate=0.001,
                                           global_step= 1,
                                           decay_steps=trainX.shape[0],
                                           decay_rate= 0.95,
@@ -75,13 +82,13 @@ yGold = tf.placeholder(tf.float32, [None, numLabels])
 weights = tf.Variable(tf.random_normal([numFeatures,numLabels],
                                        mean=0,
                                        stddev=(np.sqrt(6/numFeatures+
-                                                         numLabels+1),
-                                       name="weights")
+                                                         numLabels+1)),
+                                       name="weights"))
 
 bias = tf.Variable(tf.random_normal([1,numLabels],
                                     mean=0,
-                                    stddev=np.sqrt(6/numFeatures+numLabels+1),
-                                    name="bias")
+                                    stddev=(np.sqrt(6/numFeatures+numLabels+1)),
+                                    name="bias"))
 
 
 
@@ -92,12 +99,43 @@ bias = tf.Variable(tf.random_normal([1,numLabels],
 apply_weights_OP = tf.matmul(X, weights, name="apply_weights")
 add_bias_OP = tf.add(apply_weights_OP, bias, name="add_bias") 
 activation_OP = tf.nn.sigmoid(add_bias_OP, name="activation")
-# Mean squared error
+
+# Mean squared error cost function
 cost_OP = tf.nn.l2_loss(activation_OP-yGold, name="squared_error_cost")
 
-training_OP = tf.train.GradientDescentOptimizer(0.01).minimize(cost_OP)
+training_OP = tf.train.GradientDescentOptimizer(learningRate).minimize(cost_OP)
+
+# argmax(activation_OP, 1) gives the label our model thought was most likely
+# argmax(yGold, 1) is the correct label
+correct_predictions_OP = tf.equal(tf.argmax(activation_OP,1),tf.argmax(yGold,1))
+
+# False is 0 and True is 1, what was our average?
+accuracy_OP = tf.reduce_mean(tf.cast(correct_predictions_OP, "float"))
+
 # Initializes everything we've defined made above, but doesn't run anything
 # until sess.run()
 init_OP = tf.initialize_all_variables()
 
 
+
+#####################
+### RUN THE GRAPH ###
+#####################
+
+# Create and launch the graph in a session
+sess = tf.Session()
+sess.run(init_OP)
+
+for i in range(numEpochs):
+    if i%10 == 0:
+        train_accuracy,cost,pred = sess.run([accuracy_OP,cost_OP,activation_OP],
+                                            feed_dict={X:testX,yGold:testY})
+        print("step %d, training accuracy %g"%(i, train_accuracy))
+        print("step %d, cost %g"%(i, cost))
+        print(str(pred[:5]))
+    step = sess.run(training_OP, feed_dict={X: trainX, yGold: trainY})
+
+# How well did we do overall?
+print(sess.run(accuracy_OP, feed_dict={X: testX, yGold: testY}))
+
+sess.close()
