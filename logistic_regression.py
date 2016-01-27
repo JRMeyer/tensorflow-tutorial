@@ -13,11 +13,16 @@ testX = importData("/data/testX", delimiter="\t")
 textY = importData("/data/testY", delimiter="\t")
 
 #set global parameters
-epochs = 5                                          #number of times we iterate through training data
-batchSize = len(trainX)                             #batchSize of n
-learningRate = tf.train.exponential_decay(          #used by gradientOptimizer
+epochs = 5                                                              #number of times we iterate through training data
+batchSize = len(trainX)                                                 #batchSize of n
+learningRate = tf.train.exponential_decay(                              #used by gradientOptimizer
                                             learning_rate=0.01,
                                             global_step= 1,
                                             decay_steps=len(trainX),
                                             decay_rate= 0.95,
                                             staircase=True)
+
+
+#set tensorflow placeholders
+input = tf.placeholder(dtype="float", name="Input", shape=[None, ])
+label = tf.placeholder(dtype="float", name="Label", shape=[None, ])
