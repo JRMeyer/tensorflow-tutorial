@@ -8,7 +8,7 @@ def untar(tarPath):
     tarObject = tarfile.open(tarPath)
     tarObject.extractall()
     tarObject.close()
-    print "Extracted tar to current directory"
+    print("Extracted tar to current directory")
 
 def importData(filePath, delimiter):
     return np.genfromtxt(filePath, delimiter=delimiter, dtype=None)
