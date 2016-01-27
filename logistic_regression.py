@@ -14,7 +14,7 @@ def importData(filePath, delimiter):
     return np.genfromtxt(filePath, delimiter=delimiter, dtype=None)
 
 #untar data file
-if "data" in os.listdir(os.getcwd()):
+if "data" not in os.listdir(os.getcwd()):
     untar("data.tar.gz")
 
 #imports data with following dimensions
