@@ -18,10 +18,10 @@ if "data" in os.listdir(os.getcwd()):
     untar("data.tar.gz")
 
 #imports data with following dimensions
-print "loading training data"
+print("loading training data")
 trainX = importData("data/trainX.csv", delimiter="\t")
 trainY = importData("data/trainY.csv", delimiter="\t")
-print "loading test data"
+print("loading test data")
 testX = importData("data/testX.csv", delimiter="\t")
 textY = importData("data/testY.csv", delimiter="\t")
 
