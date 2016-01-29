@@ -47,7 +47,8 @@ numEpochs = 35000
 # everyting in at once
 batchSize = trainX.shape[0]
 # a smarter learning rate for gradientOptimizer
-learningRate = tf.train.exponential_decay(learning_rate=0.001,
+# learningRate = tf.train.exponential_decay(learning_rate=0.001,
+learningRate = tf.train.exponential_decay(learning_rate=0.0008,
                                           global_step= 1,
                                           decay_steps=trainX.shape[0],
                                           decay_rate= 0.95,
@@ -126,14 +127,30 @@ init_OP = tf.initialize_all_variables()
 sess = tf.Session()
 sess.run(init_OP)
 
+#initialize reporting variables
+cost = 0
+diff = 1
+
+#training epochs
 for i in range(numEpochs):
-    if i%10 == 0:
-        train_accuracy,cost,pred = sess.run([accuracy_OP,cost_OP,activation_OP],
-                                            feed_dict={X:testX,yGold:testY})
-        print("step %d, training accuracy %g"%(i, train_accuracy))
-        print("step %d, cost %g"%(i, cost))
-        print(str(pred[:5]))
-    step = sess.run(training_OP, feed_dict={X: trainX, yGold: trainY})
+    if diff < .0001:
+        print("change in cost %g; convergence."%diff)
+        break
+    else:
+        step = sess.run(training_OP, feed_dict={X: trainX, yGold: trainY})
+        #report occasional stats
+        if i%10 == 0:
+            #generate accuracy stats on test data
+            train_accuracy,newCost,pred = sess.run([accuracy_OP,cost_OP,activation_OP],
+                                                feed_dict={X:testX,yGold:testY})
+            #re-assign values for variables
+            diff = abs(newCost - cost)
+            cost = newCost
+            #generate print statements
+            print("step %d, training accuracy %g"%(i, train_accuracy))
+            print("step %d, cost %g"%(i, newCost))
+            print("step %d, change in cost %g"%(i, diff))
+            # print(str(pred[:5]))
 
 # How well did we do overall?
 print(sess.run(accuracy_OP, feed_dict={X: testX, yGold: testY}))
