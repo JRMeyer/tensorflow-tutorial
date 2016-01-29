@@ -41,7 +41,7 @@ trainX,trainY,testX,testY = import_data()
 #########################
 
 # number of times we iterate through training data
-numEpochs = 500
+numEpochs = 35000
 # here we set the batch size to be the total number of emails in our training
 # set... if you have a ton of data you can adjust this so you don't load
 # everyting in at once
