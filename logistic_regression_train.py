@@ -4,8 +4,8 @@ import tensorflow as tf
 import tarfile
 import os
 import matplotlib.pyplot as plt
-import matplotlib.animation as anim
 import time
+
 
 
 def csv_to_numpy_array(filePath, delimiter):
@@ -31,7 +31,6 @@ def import_data():
     return trainX,trainY,testX,testY
 
 
-
 ###################
 ### IMPORT DATA ###
 ###################
@@ -44,8 +43,7 @@ trainX,trainY,testX,testY = import_data()
 #########################
 
 # number of times we iterate through training data
-# numEpochs = 27000       #tensorboard shows that accuracy plateaus at ~25k epochs
-numEpochs = 5000       #tensorboard shows that accuracy plateaus at ~25k epochs
+numEpochs = 1000       #tensorboard shows that accuracy plateaus at ~25k epochs
 # here we set the batch size to be the total number of emails in our training
 # set... if you have a ton of data you can adjust this so you don't load
 # everyting in at once
@@ -64,6 +62,8 @@ numFeatures = trainX.shape[1]
 # numLabels = number of classes we are predicting (here just 2: ham or spam)
 numLabels = trainY.shape[1]
 
+#create a tensorflow session
+sess = tf.Session()
 
 
 ####################
@@ -83,6 +83,9 @@ yGold = tf.placeholder(tf.float32, [None, numLabels])
 #################
 ### VARIABLES ###
 #################
+
+#all values are randomly assigned:
+    #sqrt(6 / (numInputNodes + numOutputNodes + 1))
 
 weights = tf.Variable(tf.random_normal([numFeatures,numLabels],
                                        mean=0,
@@ -123,17 +126,17 @@ accuracy_OP = tf.reduce_mean(tf.cast(correct_predictions_OP, "float"))
 #summary op for accuracy
 accuracy_summary_OP = tf.scalar_summary("accuracy", accuracy_OP)
 
+#merge all summaries
+all_summary_OPS = tf.merge_all_summaries()
+
 # Initializes everything we've defined made above, but doesn't run anything
 # until sess.run()
 init_OP = tf.initialize_all_variables()
 
-#merge all summaries
-all_summary_OPS = tf.merge_all_summaries()
 
-
-##########################
-### GRAPH LIVE UPDATING###
-##########################
+###########################
+### GRAPH LIVE UPDATING ###
+###########################
 
 #lists to hold values for live graphing
 epoch_values = []
@@ -146,12 +149,12 @@ plt.xlabel("number of epochs")
 plt.ylabel("accuracy %")
 plt.title("accuracy on training data")
 
+
 #####################
 ### RUN THE GRAPH ###
 #####################
 
-# Create and launch the graph in a session
-sess = tf.Session()
+# Initialize all tensorflow objects
 sess.run(init_OP)
 
 #summary writer
@@ -189,14 +192,31 @@ for i in range(numEpochs):
             print("step %d, change in cost %g"%(i, diff))
             plt.plot(epoch_values, accuracy_values)
             plt.draw()
-            time.sleep(.5)
+            time.sleep(1)
 
 
 # How well did we do overall?
 print("final accuracy on test set: %s" %str(sess.run(accuracy_OP, feed_dict={X: testX, yGold: testY})))
 
+
+##############################
+### SAVE TRAINED VARIABLES ###
+##############################
+
+#create Saver
+saver = tf.train.Saver()
+#save variables to .ckpt file
+saver.save(sess, "trained_variables.ckpt")
+
+
+############################
+### MAKE NEW PREDICTIONS ###
+############################
+
 #close tensorflow session
 sess.close()
 
-#to view tensorboard open your browser to http://localhost:6006/
+#to view tensorboard:
+    #1. run: tensorboard --logdir=/path/to/log-directory
+    #2. open your browser to http://localhost:6006/
 #see tutorial here for graph visualization https://www.tensorflow.org/versions/0.6.0/how_tos/graph_viz/index.html
