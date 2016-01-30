@@ -3,6 +3,9 @@ import numpy as np
 import tensorflow as tf
 import tarfile
 import os
+import matplotlib.pyplot as plt
+import matplotlib.animation as anim
+import time
 
 
 def csv_to_numpy_array(filePath, delimiter):
@@ -41,7 +44,8 @@ trainX,trainY,testX,testY = import_data()
 #########################
 
 # number of times we iterate through training data
-numEpochs = 27000       #tensorboard shows that accuracy plateaus at ~25k epochs
+# numEpochs = 27000       #tensorboard shows that accuracy plateaus at ~25k epochs
+numEpochs = 5000       #tensorboard shows that accuracy plateaus at ~25k epochs
 # here we set the batch size to be the total number of emails in our training
 # set... if you have a ton of data you can adjust this so you don't load
 # everyting in at once
@@ -127,6 +131,21 @@ init_OP = tf.initialize_all_variables()
 all_summary_OPS = tf.merge_all_summaries()
 
 
+##########################
+### GRAPH LIVE UPDATING###
+##########################
+
+#lists to hold values for live graphing
+epoch_values = []
+accuracy_values = []
+
+#set up matplotlib for live updating
+plt.ion()
+plt.show()
+plt.xlabel("number of epochs")
+plt.ylabel("accuracy %")
+plt.title("accuracy on training data")
+
 #####################
 ### RUN THE GRAPH ###
 #####################
@@ -142,10 +161,6 @@ writer = tf. train.SummaryWriter("summary_logs", sess.graph_def)
 cost = 0
 diff = 1
 
-#TODO add live reporting in matplotlib graph
-# https://pythonprogramming.net/python-matplotlib-live-updating-graphs/
-# http://stackoverflow.com/questions/11874767/real-time-plotting-in-while-loop-with-matplotlib
-
 #training epochs
 for i in range(numEpochs):
     if i > 1 and diff < .0001:
@@ -156,8 +171,13 @@ for i in range(numEpochs):
         step = sess.run(training_OP, feed_dict={X: trainX, yGold: trainY})
         #report occasional stats
         if i % 10 == 0:
+            #add epoch to epoch_values
+            epoch_values.append(i)
             #generate accuracy stats on test data
             summary_results, train_accuracy, newCost = sess.run([all_summary_OPS, accuracy_OP, cost_OP], feed_dict={X: trainX, yGold: trainY})
+            #add accuracy to live graphing variable
+            accuracy_values.append(train_accuracy)
+            # accuracy_values = accuracy_values + ([train_accuracy] * 9)
             #write summary stats to writer
             writer.add_summary(summary_results, i)
             #re-assign values for variables
@@ -167,10 +187,15 @@ for i in range(numEpochs):
             print("step %d, training accuracy %g"%(i, train_accuracy))
             print("step %d, cost %g"%(i, newCost))
             print("step %d, change in cost %g"%(i, diff))
+            plt.plot(epoch_values, accuracy_values)
+            plt.draw()
+            time.sleep(.5)
+
 
 # How well did we do overall?
 print("final accuracy on test set: %s" %str(sess.run(accuracy_OP, feed_dict={X: testX, yGold: testY})))
 
+#close tensorflow session
 sess.close()
 
 #to view tensorboard open your browser to http://localhost:6006/
