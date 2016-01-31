@@ -46,7 +46,7 @@ trainX,trainY,testX,testY = import_data()
 numEpochs = 27000       #tensorboard shows that accuracy plateaus at ~25k epochs
 # here we set the batch size to be the total number of emails in our training
 # set... if you have a ton of data you can adjust this so you don't load
-# everyting in at once
+# everything in at once
 batchSize = trainX.shape[0]
 # a smarter learning rate for gradientOptimizer
 # learningRate = tf.train.exponential_decay(learning_rate=0.001,
@@ -158,7 +158,7 @@ plt.title("accuracy on training data")
 sess.run(init_OP)
 
 #summary writer
-writer = tf. train.SummaryWriter("summary_logs", sess.graph_def)
+writer = tf.train.SummaryWriter("summary_logs", sess.graph_def)
 
 #initialize reporting variables
 cost = 0
@@ -206,7 +206,7 @@ print("final accuracy on test set: %s" %str(sess.run(accuracy_OP, feed_dict={X: 
 #create Saver
 saver = tf.train.Saver()
 #save variables to .ckpt file
-saver.save(sess, "trained_variables.ckpt")
+# saver.save(sess, "trained_variables.ckpt")
 
 
 ############################
