@@ -43,7 +43,7 @@ trainX,trainY,testX,testY = import_data()
 #########################
 
 # number of times we iterate through training data
-numEpochs = 1000       #tensorboard shows that accuracy plateaus at ~25k epochs
+numEpochs = 27000       #tensorboard shows that accuracy plateaus at ~25k epochs
 # here we set the batch size to be the total number of emails in our training
 # set... if you have a ton of data you can adjust this so you don't load
 # everyting in at once
