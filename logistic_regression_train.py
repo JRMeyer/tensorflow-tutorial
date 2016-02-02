@@ -43,10 +43,11 @@ trainX,trainY,testX,testY = import_data()
 #########################
 
 # number of times we iterate through training data
-numEpochs = 50       #tensorboard shows that accuracy plateaus at ~25k epochs
+numEpochs = 2000       #tensorboard shows that accuracy plateaus at ~25k epochs
 # here we set the batch size to be the total number of emails in our training
 # set... if you have a ton of data you can adjust this so you don't load
 # everything in at once
+batchSize = 10
 batchSize = trainX.shape[0]
 # a smarter learning rate for gradientOptimizer
 # learningRate = tf.train.exponential_decay(learning_rate=0.001,
@@ -167,10 +168,10 @@ diff = 1
 #training epochs
 for i in range(numEpochs):
     numBatches = trainX.shape[0] / batchSize
-    print(batchSize)
-    print(numBatches)
     for b in range(int(numBatches)):
-        feed_dict={X: trainX[batchSize * b:batchSize * b], yGold: trainY[:batchSize * b]}       #TODO figure out how to set batch indexing
+        lowerIDX = batchSize * b
+        upperIDX = batchSize * (b + 1)
+        feed_dict={X: trainX[lowerIDX:upperIDX], yGold: trainY[lowerIDX:upperIDX]}       #TODO figure out how to set batch indexing
         if i > 1 and diff < .0001:
             print("change in cost %g; convergence."%diff)
             break
