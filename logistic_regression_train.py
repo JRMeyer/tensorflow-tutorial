@@ -43,12 +43,12 @@ trainX,trainY,testX,testY = import_data()
 #########################
 
 # number of times we iterate through training data
-numEpochs = 2000       #tensorboard shows that accuracy plateaus at ~25k epochs
+numEpochs = 10000       #tensorboard shows that accuracy plateaus at ~25k epochs
 # here we set the batch size to be the total number of emails in our training
 # set... if you have a ton of data you can adjust this so you don't load
 # everything in at once
-batchSize = 10
-batchSize = trainX.shape[0]
+batchSize = 20
+# batchSize = trainX.shape[0]
 # a smarter learning rate for gradientOptimizer
 # learningRate = tf.train.exponential_decay(learning_rate=0.001,
 learningRate = tf.train.exponential_decay(learning_rate=0.0008,
@@ -146,7 +146,7 @@ accuracy_values = []
 #set up matplotlib for live updating
 plt.ion()
 plt.show()
-plt.xlabel("number of epochs")
+plt.xlabel("number of training steps")
 plt.ylabel("accuracy %")
 plt.title("accuracy on training data")
 
@@ -164,6 +164,7 @@ writer = tf.train.SummaryWriter("summary_logs", sess.graph_def)
 #initialize reporting variables
 cost = 0
 diff = 1
+xAxisCounter = 0
 
 #training epochs
 for i in range(numEpochs):
@@ -179,9 +180,9 @@ for i in range(numEpochs):
             #run training step
             step = sess.run(training_OP, feed_dict=feed_dict)
             #report occasional stats
-            if i % 10 == 0:
+            if i % 10 == 0 and b % 2 == 0:
                 #add epoch to epoch_values
-                epoch_values.append(i)
+                epoch_values.append(xAxisCounter)
                 #generate accuracy stats on test data
                 summary_results, train_accuracy, newCost = sess.run([all_summary_OPS, accuracy_OP, cost_OP], feed_dict={X: trainX, yGold: trainY})
                 #add accuracy to live graphing variable
@@ -199,6 +200,8 @@ for i in range(numEpochs):
                 plt.plot(epoch_values, accuracy_values)
                 plt.draw()
                 time.sleep(1)
+        xAxisCounter += 1
+
 
 
 # How well did we do overall?
