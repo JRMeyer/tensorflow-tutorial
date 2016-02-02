@@ -43,7 +43,7 @@ trainX,trainY,testX,testY = import_data()
 #########################
 
 # number of times we iterate through training data
-numEpochs = 27000       #tensorboard shows that accuracy plateaus at ~25k epochs
+numEpochs = 50       #tensorboard shows that accuracy plateaus at ~25k epochs
 # here we set the batch size to be the total number of emails in our training
 # set... if you have a ton of data you can adjust this so you don't load
 # everything in at once
@@ -166,33 +166,38 @@ diff = 1
 
 #training epochs
 for i in range(numEpochs):
-    if i > 1 and diff < .0001:
-        print("change in cost %g; convergence."%diff)
-        break
-    else:
-        #run training step
-        step = sess.run(training_OP, feed_dict={X: trainX, yGold: trainY})
-        #report occasional stats
-        if i % 10 == 0:
-            #add epoch to epoch_values
-            epoch_values.append(i)
-            #generate accuracy stats on test data
-            summary_results, train_accuracy, newCost = sess.run([all_summary_OPS, accuracy_OP, cost_OP], feed_dict={X: trainX, yGold: trainY})
-            #add accuracy to live graphing variable
-            accuracy_values.append(train_accuracy)
-            # accuracy_values = accuracy_values + ([train_accuracy] * 9)
-            #write summary stats to writer
-            writer.add_summary(summary_results, i)
-            #re-assign values for variables
-            diff = abs(newCost - cost)
-            cost = newCost
-            #generate print statements
-            print("step %d, training accuracy %g"%(i, train_accuracy))
-            print("step %d, cost %g"%(i, newCost))
-            print("step %d, change in cost %g"%(i, diff))
-            plt.plot(epoch_values, accuracy_values)
-            plt.draw()
-            time.sleep(1)
+    numBatches = trainX.shape[0] / batchSize
+    print(batchSize)
+    print(numBatches)
+    for b in range(int(numBatches)):
+        feed_dict={X: trainX[batchSize * b:batchSize * b], yGold: trainY[:batchSize * b]}       #TODO figure out how to set batch indexing
+        if i > 1 and diff < .0001:
+            print("change in cost %g; convergence."%diff)
+            break
+        else:
+            #run training step
+            step = sess.run(training_OP, feed_dict=feed_dict)
+            #report occasional stats
+            if i % 10 == 0:
+                #add epoch to epoch_values
+                epoch_values.append(i)
+                #generate accuracy stats on test data
+                summary_results, train_accuracy, newCost = sess.run([all_summary_OPS, accuracy_OP, cost_OP], feed_dict={X: trainX, yGold: trainY})
+                #add accuracy to live graphing variable
+                accuracy_values.append(train_accuracy)
+                # accuracy_values = accuracy_values + ([train_accuracy] * 9)
+                #write summary stats to writer
+                writer.add_summary(summary_results, i)
+                #re-assign values for variables
+                diff = abs(newCost - cost)
+                cost = newCost
+                #generate print statements
+                print("epoch %d, batch %d, training accuracy %g"%(i, b, train_accuracy))
+                print("eopch %d, batch %d, cost %g"%(i, b, newCost))
+                print("epoch %d, batch %d, change in cost %g"%(i, b, diff))
+                plt.plot(epoch_values, accuracy_values)
+                plt.draw()
+                time.sleep(1)
 
 
 # How well did we do overall?
