@@ -162,8 +162,8 @@ plt.title("accuracy on training data")
 sess.run(init_OP)
 
 # summary ops to check how the variables (W, b) are updating after each iteration
-# weightSummary = tf.histogram_summary("weights", weights.eval(session=sess))
-weightSummary = tf.scalar_summary("weights", tf.reduce_mean(weights.eval(session=sess)))
+weightSummary = tf.histogram_summary("weights", weights.eval(session=sess))
+# weightSummary = tf.scalar_summary("weights", tf.reduce_mean(weights.eval(session=sess)))
 biasSummary = tf.histogram_summary("biases", bias.eval(session=sess))
 
 #merge all summaries
