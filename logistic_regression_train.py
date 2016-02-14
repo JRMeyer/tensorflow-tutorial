@@ -55,7 +55,7 @@ numEpochs = 27000
 batchSize = trainX.shape[0]
 # a smarter learning rate for gradientOptimizer
 # learningRate = tf.train.exponential_decay(learning_rate=0.001,
-learningRate = tf.train.exponential_decay(learning_rate=0.0008,
+learningRate = tf.train.exponential_decay(learning_rate=0.0008,     #TODO figure out what ideal learning rate is
                                           global_step= 1,
                                           decay_steps=trainX.shape[0],
                                           decay_rate= 0.95,
@@ -129,12 +129,14 @@ accuracy_OP = tf.reduce_mean(tf.cast(correct_predictions_OP, "float"))
 #summary op for accuracy
 accuracy_summary_OP = tf.scalar_summary("accuracy", accuracy_OP)
 
-#merge all summaries
-all_summary_OPS = tf.merge_all_summaries()
+
+
+
 
 # Initializes everything we've defined made above, but doesn't run anything
 # until sess.run()
 init_OP = tf.initialize_all_variables()
+
 
 
 ###########################
@@ -144,6 +146,8 @@ init_OP = tf.initialize_all_variables()
 #lists to hold values for live graphing
 epoch_values = []
 accuracy_values = []
+
+#TODO build two figures so that we can track decreasing cost at same time
 
 #set up matplotlib for live updating
 plt.ion()
@@ -161,6 +165,14 @@ plt.title("accuracy on training data")
 sess = tf.Session()
 # Initialize all tensorflow objects
 sess.run(init_OP)
+
+# summary ops to check how the variables (W, b) are updating after each iteration
+weightSummary = tf.histogram_summary("weights", weights.eval(session=sess))
+# weightSummary = tf.scalar_summary("weights", tf.reduce_mean(weights.eval(session=sess)))
+biasSummary = tf.histogram_summary("biases", bias.eval(session=sess))
+
+#merge all summaries
+all_summary_OPS = tf.merge_all_summaries()
 
 #summary writer
 writer = tf.train.SummaryWriter("summary_logs", sess.graph_def)
