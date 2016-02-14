@@ -146,15 +146,20 @@ init_OP = tf.initialize_all_variables()
 #lists to hold values for live graphing
 epoch_values = []
 accuracy_values = []
+cost_values = []
 
 #TODO build two figures so that we can track decreasing cost at same time
 
 #set up matplotlib for live updating
+#set up matplotlib for live updating
+
 plt.ion()
 plt.show()
-plt.xlabel("number of epochs")
-plt.ylabel("accuracy %")
-plt.title("accuracy on training data")
+plt.figure(1)
+#TODO figure out how to get titles and labels
+plt.xlabel("epochs")
+plt.title("top: accuracy; bottom: cost")
+
 
 
 #####################
@@ -200,6 +205,8 @@ for i in range(numEpochs):
             )
             #add accuracy to live graphing variable
             accuracy_values.append(train_accuracy)
+            #add cost to live graphing variable
+            cost_values.append(newCost)
             # accuracy_values = accuracy_values + ([train_accuracy] * 9)
             #write summary stats to writer
             writer.add_summary(summary_results, i)
@@ -210,7 +217,11 @@ for i in range(numEpochs):
             print("step %d, training accuracy %g"%(i, train_accuracy))
             print("step %d, cost %g"%(i, newCost))
             print("step %d, change in cost %g"%(i, diff))
+            plt.subplot(211)
             plt.plot(epoch_values, accuracy_values)
+            plt.draw()
+            plt.subplot(212)
+            plt.plot(epoch_values, cost_values)
             plt.draw()
             time.sleep(1)
 
