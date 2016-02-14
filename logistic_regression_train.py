@@ -1,12 +1,20 @@
+################
+### PREAMBLE ###
+################
+
 from __future__ import division
-import numpy as np
 import tensorflow as tf
+import numpy as np
 import tarfile
 import os
 import matplotlib.pyplot as plt
 import time
 
 
+
+###################
+### IMPORT DATA ###
+###################
 
 def csv_to_numpy_array(filePath, delimiter):
     return np.genfromtxt(filePath, delimiter=delimiter, dtype=None)
@@ -30,12 +38,8 @@ def import_data():
     testY = csv_to_numpy_array("data/testY.csv", delimiter="\t")
     return trainX,trainY,testX,testY
 
-
-###################
-### IMPORT DATA ###
-###################
-
 trainX,trainY,testX,testY = import_data()
+
 
 
 #########################
@@ -43,7 +47,8 @@ trainX,trainY,testX,testY = import_data()
 #########################
 
 # number of times we iterate through training data
-numEpochs = 27000       #tensorboard shows that accuracy plateaus at ~25k epochs
+# tensorboard shows that accuracy plateaus at ~25k epochs
+numEpochs = 27000
 # here we set the batch size to be the total number of emails in our training
 # set... if you have a ton of data you can adjust this so you don't load
 # everything in at once
@@ -59,11 +64,9 @@ learningRate = tf.train.exponential_decay(learning_rate=0.0008,
 # Get our dimensions for our different variables and placeholders:
 # numFeatures = the number of words extracted from each email
 numFeatures = trainX.shape[1]
-# numLabels = number of classes we are predicting (here just 2: ham or spam)
+# numLabels = number of classes we are predicting (here just 2: Ham or Spam)
 numLabels = trainY.shape[1]
 
-#create a tensorflow session
-sess = tf.Session()
 
 
 ####################
@@ -154,6 +157,8 @@ plt.title("accuracy on training data")
 ### RUN THE GRAPH ###
 #####################
 
+#create a tensorflow session
+sess = tf.Session()
 # Initialize all tensorflow objects
 sess.run(init_OP)
 
@@ -177,7 +182,10 @@ for i in range(numEpochs):
             #add epoch to epoch_values
             epoch_values.append(i)
             #generate accuracy stats on test data
-            summary_results, train_accuracy, newCost = sess.run([all_summary_OPS, accuracy_OP, cost_OP], feed_dict={X: trainX, yGold: trainY})
+            summary_results, train_accuracy, newCost = sess.run(
+                [all_summary_OPS, accuracy_OP, cost_OP], 
+                feed_dict={X: trainX, yGold: trainY}
+            )
             #add accuracy to live graphing variable
             accuracy_values.append(train_accuracy)
             # accuracy_values = accuracy_values + ([train_accuracy] * 9)
@@ -196,7 +204,9 @@ for i in range(numEpochs):
 
 
 # How well did we do overall?
-print("final accuracy on test set: %s" %str(sess.run(accuracy_OP, feed_dict={X: testX, yGold: testY})))
+print("final accuracy on test set: %s" %str(sess.run(accuracy_OP, 
+                                                     feed_dict={X: testX, 
+                                                                yGold: testY})))
 
 
 ##############################
