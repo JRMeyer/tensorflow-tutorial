@@ -106,7 +106,6 @@ init_OP = tf.initialize_all_variables()
 sess.run(init_OP)
 
 #method for converting tensor label to string label
-#TODO confirm ham == [1,0] and spam == [0,1]
 def labelToString(label):
     if np.argmax(label) == 0:
         return "ham"
