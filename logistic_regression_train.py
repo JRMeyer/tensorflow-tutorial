@@ -102,9 +102,9 @@ bias = tf.Variable(tf.random_normal([1,numLabels],
 
 
 
-####################
-### TRAINING OPS ###
-####################
+######################
+### PREDICTION OPS ###
+######################
 
 # INITIALIZE our weights and biases
 init_OP = tf.initialize_all_variables()
@@ -114,23 +114,21 @@ apply_weights_OP = tf.matmul(X, weights, name="apply_weights")
 add_bias_OP = tf.add(apply_weights_OP, bias, name="add_bias") 
 activation_OP = tf.nn.sigmoid(add_bias_OP, name="activation")
 
+
+#####################
+### EVALUATION OP ###
+#####################
+
 # COST FUNCTION i.e. MEAN SQUARED ERROR
 cost_OP = tf.nn.l2_loss(activation_OP-yGold, name="squared_error_cost")
 
+
+#######################
+### OPTIMIZATION OP ###
+#######################
+
 # OPTIMIZATION ALGORITHM i.e. GRADIENT DESCENT
 training_OP = tf.train.GradientDescentOptimizer(learningRate).minimize(cost_OP)
-
-
-######################
-### EVALUATION OPS ###
-######################
-
-# argmax(activation_OP, 1) gives the label our model thought was most likely
-# argmax(yGold, 1) is the correct label
-correct_predictions_OP = tf.equal(tf.argmax(activation_OP,1),tf.argmax(yGold,1))
-
-# False is 0 and True is 1, what was our average?
-accuracy_OP = tf.reduce_mean(tf.cast(correct_predictions_OP, "float"))
 
 
 ###########################
@@ -163,6 +161,12 @@ sess = tf.Session()
 # Initialize all tensorflow variables
 sess.run(init_OP)
 
+## Ops for vizualization
+# argmax(activation_OP, 1) gives the label our model thought was most likely
+# argmax(yGold, 1) is the correct label
+correct_predictions_OP = tf.equal(tf.argmax(activation_OP,1),tf.argmax(yGold,1))
+# False is 0 and True is 1, what was our average?
+accuracy_OP = tf.reduce_mean(tf.cast(correct_predictions_OP, "float"))
 # Summary op for regression output
 activation_summary_OP = tf.histogram_summary("output", activation_OP)
 # Summary op for accuracy
