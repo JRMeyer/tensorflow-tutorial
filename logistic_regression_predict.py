@@ -70,11 +70,6 @@ weights = tf.Variable(tf.zeros([numFeatures,numLabels]))
 
 bias = tf.Variable(tf.zeros([1,numLabels]))
 
-#load variables from file
-saver = tf.train.Saver()
-saver.restore(sess, "trained_variables.ckpt")
-
-
 ########################
 ### OPS / OPERATIONS ###
 ########################
@@ -97,13 +92,18 @@ accuracy_OP = tf.reduce_mean(tf.cast(correct_predictions_OP, "float"))
 # until sess.run()
 init_OP = tf.initialize_all_variables()
 
+sess.run(init_OP)       #initialize variables BEFORE loading
+
+#load variables from file
+saver = tf.train.Saver()
+saver.restore(sess, "trained_variables.ckpt")
 
 #####################
 ### RUN THE GRAPH ###
 #####################
 
 # Initialize all tensorflow objects
-sess.run(init_OP)
+# sess.run(init_OP)
 
 #method for converting tensor label to string label
 def labelToString(label):
