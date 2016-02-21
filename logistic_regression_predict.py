@@ -126,6 +126,6 @@ if __name__ == "__main__":
     prediction, evaluation = sess.run([activation_OP, accuracy_OP], feed_dict={X: testX, yGold: testY})
 
     for i in range(len(testX)):
-        print("regression predictes email %s to be %s and is actually %s" %(str(i + 1), labelToString(prediction[i]), labelToString(testY[i])))
+        print("regression predicts email %s to be %s and is actually %s" %(str(i + 1), labelToString(prediction[i]), labelToString(testY[i])))
     print("overall accuracy of dataset: %s percent" %str(evaluation))
 

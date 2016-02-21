@@ -55,7 +55,7 @@ numLabels = trainY.shape[1]
 # TRAINING SESSION PARAMETERS
 # number of times we iterate through training data
 # tensorboard shows that accuracy plateaus at ~25k epochs
-numEpochs = 27000
+numEpochs = 25000
 # here we set the batch size to be the total number of emails in our training
 # set... if you have a ton of data you can adjust this so you don't load
 # everything in at once
@@ -235,7 +235,7 @@ print("final accuracy on test set: %s" %str(sess.run(accuracy_OP, feed_dict={X: 
 #create Saver
 saver = tf.train.Saver()
 #save variables to .ckpt file
-# saver.save(sess, "trained_variables.ckpt")            //TODO uncomment only if new copy of variables is required
+saver.save(sess, "trained_variables.ckpt")            #TODO uncomment only if new copy of variables is required
 
 
 ############################
