@@ -1,2 +1,4 @@
 \beamer@endinputifotherversion {3.24pt}
-\beamer@sectionintoc {1}{The Flow of TensorFlow}{3}{0}{1}
+\beamer@sectionintoc {1}{What's Going to Happen}{3}{0}{1}
+\beamer@sectionintoc {2}{TensorFlow Structures}{4}{0}{2}
+\beamer@sectionintoc {3}{The Flow of TensorFlow}{6}{0}{3}
