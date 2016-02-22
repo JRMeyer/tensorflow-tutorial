@@ -122,8 +122,63 @@ framexleftmargin=1mm, framextopmargin=1mm, frame=single,#1
 \frame{\frametitle{Table of contents}\tableofcontents} 
 
 
+\section{What's Going to Happen}
+
+\frame{
+Tonight we will...
+\begin{itemize}
+\item describe the basic TensorFlow structures
+\item build a working example of text classification
+\item point out places where \textit{other} TensorFlow "built-ins" apply {\footnotesize(optimizers, cost functions, etc)}
+\item "hand-wave" liberally \\
+{\footnotesize(when we don't want to get into it or don't know the answer)}
+\end{itemize}
+Tonight we will \textbf{not}...
+\begin{itemize}
+\item discuss details of NLP feature selection
+\item discuss details of Machine Learning \\
+{\footnotesize(linear algebra, backpropogation, etc.)}
+\end{itemize}
+}
+
+\section{TensorFlow Structures}
+
+\frame{\frametitle{}
+  \centering
+    \begingroup
+    \fontsize{20pt}{20pt}\selectfont
+    TensorFlow Structures
+  \endgroup
+  \begin{flushleft}
+  tensor = \textit{n}-dimensional matrix
+  \end{flushleft}
+\includegraphics[width=\textwidth,height=0.9\textheight,keepaspectratio]{tensors.png}}
+
+\begin{frame}[fragile]
+\frametitle{TensorFlow Structures}
+\begin{itemize}
+\item{\textbf{constants}}: {\small \textit{never} changes its value(s)} \\
+\begin{python}
+c = tf.constant(2.0, name="constantC") #can be int, float, or tensor
+\end{python}
+\item{\textbf{placeholders}}: {\small shell into which tensors can be iteratively inserted} \\
+\begin{python}
+X = tf.placeholder(tf.float32, [None, 200], name="input")
+\end{python}
+\item{\textbf{variables}}: {\small value(s) can be updated}
+\begin{python}
+weights = tf.Variable(tf.random_normal([1, 200], name="weights"))
+\end{python}
+\item{\textbf{operations}}: {\small computations that will act on tensors}
+\begin{python}
+apply_weights_OP = tf.matmul(X, weights, name="apply_weights")
+add_bias_OP = tf.add(apply_weights_OP, bias, name="add_bias")
+activation_OP = tf.nn.sigmoid(add_bias_OP, name="activation")\end{python}
+\end{itemize}
+\end{frame}
 
 \section{The Flow of TensorFlow}
+
 \frame{\frametitle{}
   \centering
     \begingroup
