@@ -1,0 +1,3 @@
+\begin{python}
+activation_OP = tf.nn.sigmoid(add_bias_OP, name="activation")
+  \end{python}
