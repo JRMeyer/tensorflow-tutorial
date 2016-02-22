@@ -1,3 +1,14 @@
-\begin{python}
-activation_OP = tf.nn.sigmoid(add_bias_OP, name="activation")
+\frametitle{Reuse, Recycle}
+  \begin{python}
+##############################
+### SAVE TRAINED VARIABLES ###
+##############################
+
+# Create Saver
+saver = tf.train.Saver()
+# Save variables to .ckpt file
+# saver.save(sess, "trained_variables.ckpt")
+
+# Close tensorflow session
+sess.close()
   \end{python}
