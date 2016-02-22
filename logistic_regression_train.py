@@ -141,7 +141,7 @@ accuracy_OP = tf.reduce_mean(tf.cast(correct_predictions_OP, "float"))
 #####################
 
 ##
-## TENSFORBOARD SUMMARY OPS
+## TENSORBOARD SUMMARY OPS
 ##
 
 # Summary op for feedforward output
@@ -235,7 +235,7 @@ print("final accuracy on test set: %s" %str(sess.run(accuracy_OP, feed_dict={X: 
 #create Saver
 saver = tf.train.Saver()
 #save variables to .ckpt file
-saver.save(sess, "trained_variables.ckpt")            #TODO uncomment only if new copy of variables is required
+# saver.save(sess, "trained_variables.ckpt")            #TODO uncomment only if new copy of variables is required
 
 
 ############################
