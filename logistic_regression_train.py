@@ -86,8 +86,8 @@ yGold = tf.placeholder(tf.float32, [None, numLabels])
 ### VARIABLES ###
 #################
 
-#all values are randomly assigned:
-    #sqrt(6 / (numInputNodes + numOutputNodes + 1))
+# Values are randomly sampled from a Gaussian with a standard deviation of:
+#     sqrt(6 / (numInputNodes + numOutputNodes + 1))
 
 weights = tf.Variable(tf.random_normal([numFeatures,numLabels],
                                        mean=0,
