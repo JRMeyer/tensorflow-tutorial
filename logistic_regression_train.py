@@ -107,7 +107,7 @@ bias = tf.Variable(tf.random_normal([1,numLabels],
 ######################
 
 # INITIALIZE our weights and biases
-init_OP = tf.initialize_all_variables()
+init_OP = tf.global_variables_initializer()
 
 # PREDICTION ALGORITHM i.e. FEEDFORWARD ALGORITHM
 apply_weights_OP = tf.matmul(X, weights, name="apply_weights")
@@ -168,18 +168,18 @@ correct_predictions_OP = tf.equal(tf.argmax(activation_OP,1),tf.argmax(yGold,1))
 # False is 0 and True is 1, what was our average?
 accuracy_OP = tf.reduce_mean(tf.cast(correct_predictions_OP, "float"))
 # Summary op for regression output
-activation_summary_OP = tf.histogram_summary("output", activation_OP)
+activation_summary_OP = tf.summary.histogram("output", activation_OP)
 # Summary op for accuracy
-accuracy_summary_OP = tf.scalar_summary("accuracy", accuracy_OP)
+accuracy_summary_OP = tf.summary.scalar("accuracy", accuracy_OP)
 # Summary op for cost
-cost_summary_OP = tf.scalar_summary("cost", cost_OP)
+cost_summary_OP = tf.summary.scalar("cost", cost_OP)
 # Summary ops to check how variables (W, b) are updating after each iteration
-weightSummary = tf.histogram_summary("weights", weights.eval(session=sess))
-biasSummary = tf.histogram_summary("biases", bias.eval(session=sess))
+weightSummary = tf.summary.histogram("weights", weights.eval(session=sess))
+biasSummary = tf.summary.histogram("biases", bias.eval(session=sess))
 # Merge all summaries
-all_summary_OPS = tf.merge_all_summaries()
+all_summary_OPS = tf.summary.merge_all()
 # Summary writer
-writer = tf.train.SummaryWriter("summary_logs", sess.graph_def)
+writer = tf.summary.FileWriter("summary_logs", sess.graph)
 
 # Initialize reporting variables
 cost = 0
