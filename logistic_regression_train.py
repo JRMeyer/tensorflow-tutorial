@@ -91,13 +91,13 @@ yGold = tf.placeholder(tf.float32, [None, numLabels])
 
 weights = tf.Variable(tf.random_normal([numFeatures,numLabels],
                                        mean=0,
-                                       stddev=(np.sqrt(6/numFeatures+
-                                                         numLabels+1)),
+                                       stddev=(np.sqrt(6/(numFeatures+
+                                                         numLabels+1))),
                                        name="weights"))
 
 bias = tf.Variable(tf.random_normal([1,numLabels],
                                     mean=0,
-                                    stddev=(np.sqrt(6/numFeatures+numLabels+1)),
+                                    stddev=(np.sqrt(6/(numFeatures+numLabels+1))),
                                     name="bias"))
 
 
