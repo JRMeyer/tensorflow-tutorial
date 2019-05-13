@@ -9,9 +9,9 @@ To ground this tutorial in some real-world application, we decided to use a comm
 
 # More
 
-You can find a walk through of this code at
+You can find a tutorial and walk-through of the code here:
 
-```http://jrmeyer.github.io/machinelearning/2016/02/01/TensorFlow-Tutorial.html```
+[http://jrmeyer.github.io/machinelearning/2016/02/01/TensorFlow-Tutorial.html](http://jrmeyer.github.io/machinelearning/2016/02/01/TensorFlow-Tutorial.html)
 
 Feel free to leave comments or questions!
 
